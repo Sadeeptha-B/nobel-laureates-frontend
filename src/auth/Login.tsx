@@ -1,4 +1,4 @@
-const LoginPage = ()=>{
+const Login = ()=>{
     return <form>
         <label htmlFor="username">Username</label>
         <input type="text" id="username" name="username"></input>
@@ -8,4 +8,4 @@ const LoginPage = ()=>{
     </form>
 }
 
-export default LoginPage
+export default Login

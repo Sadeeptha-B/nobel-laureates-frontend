@@ -1,9 +1,11 @@
-import LoginPage from "./pages/LoginPage"
+import { Routes, Route } from "react-router-dom";
+import Laureates from "./laureates/pages/Laureates";
+
 
 function App() {
 
   return (
-    <LoginPage/>
+    <Laureates/>
   )
 }
 
