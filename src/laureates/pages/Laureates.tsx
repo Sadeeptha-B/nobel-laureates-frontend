@@ -3,6 +3,7 @@ import LaureateList from "../components/LaureateList";
 
 const DUMMY_DATA: LaureateItemDetails[] = [
   {
+    id: "1",
     knownName: "Wilhelm Conrad Röntgen",
     prizes: [
       {

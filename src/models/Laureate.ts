@@ -19,6 +19,7 @@ export interface Laureate {
 
 
 export interface LaureateItemDetails{
+    id: "1"
     knownName: string;
     prizes: NobelItemDetails[]
 }
