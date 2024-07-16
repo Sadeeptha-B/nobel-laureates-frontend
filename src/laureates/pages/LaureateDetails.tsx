@@ -1,18 +1,20 @@
 import { useParams } from "react-router-dom";
 import { Laureate } from "../../models/Laureate";
+import Card from "../../shared/components/UIElements/Card";
 
 const DUMMY_DATA: Laureate[] = [
   {
     id: "1",
     knownName: "Wilhelm Conrad Röntgen",
+    // fullName: "Wilhelm Conrad Röntgen",
     gender: "male",
     birth: {
       date: "1845-03-27",
-      location: "",
+      location: "Lennep, Prussia (now Remscheid, Germany)",
     },
     death: {
-      date: "",
-      location: "Lennep, Prussia (now Remscheid, Germany)",
+      date: "1923-02-10",
+      location: "Munich, Germany",
     },
     wikipedia: "https://en.wikipedia.org/wiki/Wilhelm_Röntgen",
     wikidata: "https://www.wikidata.org/wiki/Q3097",
@@ -50,32 +52,34 @@ const LaureateDetails = () => {
   const { knownName, birth, death, wikipedia, wikidata, nobelPrizes } =
     laureateData;
   return (
-    <>
+    <div className="grid grid-cols-2 grid-rows-2">
       <h1>{knownName}</h1>
-      <div>
-        <h2>Links</h2>
-        <h2>{wikipedia}</h2>
-        <h2>{wikidata}</h2>
-      </div>
-      <div>
+        <aside>
+          <h2>Links</h2>
+          <h2>{wikipedia}</h2>
+          <h2>{wikidata}</h2>
+        </aside>
+
+      <section>
         <h3>{birth.date}</h3>
         <h3>{birth.location}</h3>
-        <hr />
         <h3>{death.date}</h3>
         <h3>{death.location}</h3>
-      </div>
-      {nobelPrizes.map((prize) => (
-        <>
-          <h3>{prize.awardYear}</h3>
-          <h3>{prize.category}</h3>
-          <h3>{prize.categoryFullName}</h3>
-          <h3>{prize.motivation}</h3>
-          <h3>{prize.prizeAmount}</h3>
-          <h3>{prize.prizeStatus}</h3>
-          <h3>{prize.dateAwarded.toDateString()}</h3>
-        </>
-      ))}
-    </>
+      </section>
+      <section>
+        {nobelPrizes.map((prize) => (
+          <>
+            <h3>{prize.awardYear}</h3>
+            <h3>{prize.category}</h3>
+            <h3>{prize.categoryFullName}</h3>
+            <h3>{prize.motivation}</h3>
+            <h3>{prize.prizeAmount}</h3>
+            <h3>{prize.prizeStatus}</h3>
+            <h3>{prize.dateAwarded.toDateString()}</h3>
+          </>
+        ))}
+      </section>
+    </div>
   );
 };
 
