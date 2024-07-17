@@ -4,13 +4,13 @@ import Card from "../../shared/components/UIElements/Card";
 
 const LaureateItem = ({ id, knownName, prizes }: LaureateItemDetails) => {
   return (
-    <li>
+    <li key={id}>
       <Card>
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
           {knownName}
         </h5>
-        {prizes.map((prize) => (
-          <div className="flex items-center m-6 gap-10">
+        {prizes.map((prize, index) => (
+          <div className="flex items-center m-6 gap-10" key={index}>
             <div className="flex-1 min-w-0 ms-4">
               <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                 {prize.categoryFullName}
@@ -39,9 +39,9 @@ const LaureateItem = ({ id, knownName, prizes }: LaureateItemDetails) => {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M1 5h12m0 0L9 1m4 4L9 9"
             />
           </svg>
