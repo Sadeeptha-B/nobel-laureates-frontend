@@ -10,13 +10,16 @@ type InputProps = {
   rows?: number;
   validators: ValidationData[];
   errorText: string;
+  onInput: any;
 };
 
-type ACTIONTYPE = {
-  type: "CHANGE" | "TOUCH";
-  value: string;
-  validators: ValidationData[];
-};
+type ACTIONTYPE =
+  | {
+      type: "CHANGE";
+      value: string;
+      validators: ValidationData[];
+    }
+  | { type: "TOUCH" };
 
 export enum InputType {
   Input,
@@ -59,10 +62,15 @@ const Input = (props: InputProps) => {
   const touchHandler = () => {
     dispatch({
       type: "TOUCH",
-      value: inputState.value,
-      validators: props.validators,
     });
   };
+
+  const { id, onInput } = props;
+  const { value, isValid } = inputState;
+
+  useEffect(() => {
+    props.onInput(props.id, inputState.value, inputState.isValid);
+  }, [id, value, isValid, onInput]);
 
   const element =
     props.element == InputType.Input ? (

@@ -1,11 +1,76 @@
 import { AuthContext } from "../shared/context/auth-context";
-import { useContext } from "react";
+import { FormEvent, useCallback, useContext, useReducer } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Input, { InputType } from "../shared/components/FormElements/Input";
-import { VALIDATOR_EMAIL, VALIDATOR_REQUIRE } from "../shared/utils/validators";
+import {
+  VALIDATOR_EMAIL,
+  VALIDATOR_MINLENGTH,
+  VALIDATOR_REQUIRE,
+} from "../shared/utils/validators";
+
+const initialFormState = {
+  inputs: {
+    email: { value: "", isValid: false },
+    password: { value: "", isValid: false },
+  },
+  isValid: false,
+};
+
+type ACTIONTYPE = {
+  type: "INPUT_CHANGE";
+  inputId: string;
+  isValid: boolean;
+  value: string;
+};
+
+const formReducer = (state: typeof initialFormState, action: ACTIONTYPE) => {
+  switch (action.type) {
+    case "INPUT_CHANGE":
+      let formIsValid = true;
+      for (const inputId in state.inputs) {
+        if (inputId == action.inputId) {
+          formIsValid = formIsValid && action.isValid;
+        } else {
+          formIsValid =
+            formIsValid &&
+            state.inputs[inputId as keyof typeof state.inputs].isValid;
+        }
+      }
+
+      return {
+        ...state,
+        inputs: {
+          ...state.inputs,
+          [action.inputId]: { value: action.value, isValid: action.isValid },
+        },
+        isValid: formIsValid,
+      };
+    default:
+      return state;
+  }
+};
 
 const Login = () => {
   const auth = useContext(AuthContext);
+  const [formState, dispatch] = useReducer(formReducer, initialFormState);
+
+  // Use callback to prevent infinite loops
+  const inputHandler = useCallback(
+    (id: string, value: string, isValid: boolean) => {
+      dispatch({
+        type: "INPUT_CHANGE",
+        value: value,
+        isValid: isValid,
+        inputId: id,
+      });
+    },
+    []
+  );
+
+  const submitHandler = (e: FormEvent) => {
+    e.preventDefault();
+    console.log(formState.inputs);
+  };
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
@@ -24,9 +89,9 @@ const Login = () => {
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Sign in to your account
+              Create a new account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form className="space-y-4 md:space-y-6" onSubmit={submitHandler}>
               <Input
                 element={InputType.Input}
                 id="email"
@@ -35,6 +100,7 @@ const Login = () => {
                 placeholder="name@company.com"
                 validators={[VALIDATOR_REQUIRE(), VALIDATOR_EMAIL()]}
                 errorText="Invalid email"
+                onInput={inputHandler}
               />
               <Input
                 element={InputType.Input}
@@ -42,8 +108,9 @@ const Login = () => {
                 label="Password"
                 type="password"
                 placeholder="••••••••"
-                validators={[VALIDATOR_REQUIRE()]}
+                validators={[VALIDATOR_MINLENGTH(6)]}
                 errorText="Invalid password"
+                onInput={inputHandler}
               />
 
               <ReCAPTCHA
@@ -52,18 +119,19 @@ const Login = () => {
               />
               <button
                 type="submit"
-                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                onClick={auth.login}
+                className="w-full text-white disabled:bg-blue-400 dark:disabled:bg-blue-500 disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                // onClick={auth.login}
+                disabled={!formState.isValid}
               >
-                Sign in
+                Sign up
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet?{" "}
+                Already have an account? &nbsp;
                 <a
                   href="#"
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
-                  Sign up
+                  Sign in
                 </a>
               </p>
             </form>
