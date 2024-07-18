@@ -13,14 +13,15 @@ import {
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
 } from "../shared/utils/validators";
+import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
+import ErrorNotification from "../shared/components/UIElements/ErrorNotification";
 
-// Initial state starts from login
-const initialFormState: FormState = {
-  inputs: {
-    email: { value: "", isValid: false },
-    password: { value: "", isValid: false },
-  },
-  isValid: false,
+// Types
+type FormInputs = { [key: string]: { value: string; isValid: boolean } };
+
+type FormState = {
+  inputs: FormInputs;
+  isValid: boolean;
 };
 
 type ACTIONTYPE =
@@ -31,6 +32,15 @@ type ACTIONTYPE =
       value: string;
     }
   | { type: "SET_DATA"; inputs: FormInputs; isValid: boolean };
+
+// Initial state starts from login
+const initialFormState: FormState = {
+  inputs: {
+    email: { value: "", isValid: false },
+    password: { value: "", isValid: false },
+  },
+  isValid: false,
+};
 
 const formReducer = (state: FormState, action: ACTIONTYPE): FormState => {
   switch (action.type) {
@@ -68,6 +78,8 @@ const Auth = () => {
   const [formState, dispatch] = useReducer(formReducer, initialFormState);
   // To handle switching between login and signup modes
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [authPending, setAuthPending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   // Use callback to prevent infinite loops
   const inputHandler = useCallback(
@@ -93,9 +105,46 @@ const Auth = () => {
     []
   );
 
-  const submitHandler = (e: FormEvent) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     console.log(formState.inputs);
+    try {
+      const endpoint = isLoginMode ? "login" : "signup";
+      const url = `${import.meta.env.VITE_APP_API_URL}/api/users/${endpoint}`;
+      const headers = { "Content-Type": "application/json" };
+      let body: { [key: string]: string } = {
+        email: formState.inputs.email.value,
+        password: formState.inputs.password.value,
+      };
+
+      if (!isLoginMode) {
+        body.name = formState.inputs.name.value;
+      }
+
+      const bodyJson = JSON.stringify(body);
+
+      setAuthPending(true);
+      setErrorMessage(undefined);
+      const response = await fetch(url, {
+        method: "POST",
+        headers,
+        body: bodyJson,
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Error model from backend will always send a message property
+        throw new Error(data);
+      }
+
+      setAuthPending(false);
+      auth.login(data.userId, data.token);
+    } catch (error: any) {
+      setAuthPending(false);
+      setErrorMessage(
+        error.message || "Something went wrong, Please try again."
+      );
+    }
   };
 
   const switchModeHandler = () => {
@@ -118,6 +167,7 @@ const Auth = () => {
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        {authPending && <LoadingSpinner asOverlay />}
         <a
           href="#"
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
@@ -202,15 +252,9 @@ const Auth = () => {
           </div>
         </div>
       </div>
+      {errorMessage && <ErrorNotification message={errorMessage} />}
     </section>
   );
-};
-
-type FormInputs = { [key: string]: { value: string; isValid: boolean } };
-
-type FormState = {
-  inputs: FormInputs;
-  isValid: boolean;
 };
 
 export default Auth;

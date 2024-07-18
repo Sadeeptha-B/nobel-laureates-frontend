@@ -1,8 +1,14 @@
-type Props = {};
+type Props = {
+  asOverlay: boolean;
+};
 
 const LoadingSpinner = (props: Props) => {
   return (
-    <div className="flex items-center justify-center w-56 h-56 rounded-lg bg-gray-50 dark:bg-gray-800">
+    <div
+      className={`${
+        props.asOverlay && "absolute"
+      }  flex items-center justify-center w-56 h-56 rounded-lg`}
+    >
       <div role="status">
         <svg
           aria-hidden="true"

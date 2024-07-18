@@ -41,7 +41,7 @@ const Laureates = () => {
 
   const loader = (
     <div className="flex justify-center items-center">
-      <LoadingSpinner />
+      <LoadingSpinner asOverlay />
     </div>
   );
 
@@ -69,7 +69,7 @@ const Laureates = () => {
           } as LaureateItemDetails;
         });
 
-      console.log(data)
+      console.log(data);
 
       setItems((prevItems) => [...prevItems, ...data]);
       setPage((prevPage) => prevPage + 25);

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,18 +13,40 @@ import MainHeader from "./shared/components/Navigation/MainHeader";
 import About from "./laureates/pages/About";
 import Auth from "./auth/Auth";
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+const AUTH_STORAGE_KEY = "UserData";
 
-  const login = useCallback(() => {
-    setIsLoggedIn(true);
+function App() {
+  const [token, setToken] = useState<string | null>();
+  const [userId, setUserId] = useState<string | null>();
+
+  const login = useCallback((uid: string, token: string) => {
+    setToken(token);
+    setUserId(uid);
+    localStorage.setItem(
+      AUTH_STORAGE_KEY,
+      JSON.stringify({ userId: uid, token: token })
+    );
   }, []);
 
   const logout = useCallback(() => {
-    setIsLoggedIn(false);
+    setToken(null);
+    setUserId(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
   }, []);
 
-  let routes = !isLoggedIn ? (
+  // Called on mount
+  useEffect(() => {
+    const userDataJson = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (userDataJson) {
+      const userData = JSON.parse(userDataJson);
+
+      if (userData.token) {
+        login(userData.userId, userData.userId);
+      }
+    }
+  }, [login]);
+
+  let routes = !token ? (
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="*" element={<Navigate to="/auth" />} />
@@ -39,7 +61,9 @@ function App() {
   );
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn: !!token, token, userId, login, logout }}
+    >
       <Router>
         <MainHeader />
         <main className="mt-5">{routes}</main>
