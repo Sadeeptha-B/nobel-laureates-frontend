@@ -12,10 +12,10 @@ const LaureateList = ({ items }: { items: LaureateItemDetails[] }) => {
   }
 
   return (
-    <ul className="my-0 mx-auto p-0 flex justify-center first-line:flex-wrap">
-      {items.map((item) => (
+    <ul className="my-0 mx-auto p-0 flex justify-center items-center flex-col first-line:flex-wrap">
+      {items.map((item, index) => (
         <LaureateItem
-          key={item.id}
+          key={index}
           id={item.id}
           knownName={item.knownName}
           prizes={item.prizes}

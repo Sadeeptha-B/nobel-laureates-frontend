@@ -23,3 +23,25 @@ export interface LaureateItemDetails{
     knownName: string;
     prizes: NobelItemDetails[]
 }
+
+
+//  data.map((item: any) => {
+//         const d = {
+//           id: item.id,
+//           knownName: item.knownName,
+//           gender: item.gender,
+//           birth: {
+//             date: item.birth.date,
+//             location: item.birth.place.locationString.en
+//           },
+//           death: {
+//             date: item.death.date,
+//             location: item.death.place.locationString.en
+//           },
+//           wikipedia: item.wikipedia.english,
+//           wikidata: item.wikidata.url,
+//           nobelPrizes: []
+//         } as Laureate
+
+//         d.nob
+//       })
