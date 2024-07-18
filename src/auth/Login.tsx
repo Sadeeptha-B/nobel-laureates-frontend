@@ -1,6 +1,8 @@
 import { AuthContext } from "../shared/context/auth-context";
 import { useContext } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import Input, { InputType } from "../shared/components/FormElements/Input";
+import { VALIDATOR_EMAIL, VALIDATOR_REQUIRE } from "../shared/utils/validators";
 
 const Login = () => {
   const auth = useContext(AuthContext);
@@ -17,7 +19,7 @@ const Login = () => {
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
             alt="logo"
           />
-          Flowbite
+          Nobel Laureates
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -25,38 +27,25 @@ const Login = () => {
               Sign in to your account
             </h1>
             <form className="space-y-4 md:space-y-6" action="#">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Your email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="name@company.com"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                />
-              </div>
+              <Input
+                element={InputType.Input}
+                id="email"
+                label="Your Email"
+                type="email"
+                placeholder="name@company.com"
+                validators={[VALIDATOR_REQUIRE(), VALIDATOR_EMAIL()]}
+                errorText="Invalid email"
+              />
+              <Input
+                element={InputType.Input}
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                validators={[VALIDATOR_REQUIRE()]}
+                errorText="Invalid password"
+              />
+
               <ReCAPTCHA
                 className="flex justify-center items-center"
                 sitekey={import.meta.env.VITE_APP_SITE_KEY as string}
