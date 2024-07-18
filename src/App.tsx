@@ -31,7 +31,6 @@ function App() {
     </Routes>
   ) : (
     <Routes>
-      {" "}
       <Route path="/" element={<Laureates />} />
       <Route path="/laureates/:laureateId" element={<LaureateDetails />} />
       <Route path="/about" element={<About />} />
