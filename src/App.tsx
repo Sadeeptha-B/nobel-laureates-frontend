@@ -11,7 +11,7 @@ import Laureates from "./laureates/pages/Laureates";
 import LaureateDetails from "./laureates/pages/LaureateDetails";
 import MainHeader from "./shared/components/Navigation/MainHeader";
 import About from "./laureates/pages/About";
-import Login from "./auth/Login";
+import Auth from "./auth/Auth";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -26,7 +26,7 @@ function App() {
 
   let routes = !isLoggedIn ? (
     <Routes>
-      <Route path="/auth" element={<Login />} />
+      <Route path="/auth" element={<Auth />} />
       <Route path="*" element={<Navigate to="/auth" />} />
     </Routes>
   ) : (

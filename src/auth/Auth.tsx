@@ -1,5 +1,11 @@
 import { AuthContext } from "../shared/context/auth-context";
-import { FormEvent, useCallback, useContext, useReducer } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useContext,
+  useReducer,
+  useState,
+} from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Input, { InputType } from "../shared/components/FormElements/Input";
 import {
@@ -8,7 +14,8 @@ import {
   VALIDATOR_REQUIRE,
 } from "../shared/utils/validators";
 
-const initialFormState = {
+// Initial state starts from login
+const initialFormState: FormState = {
   inputs: {
     email: { value: "", isValid: false },
     password: { value: "", isValid: false },
@@ -16,14 +23,16 @@ const initialFormState = {
   isValid: false,
 };
 
-type ACTIONTYPE = {
-  type: "INPUT_CHANGE";
-  inputId: string;
-  isValid: boolean;
-  value: string;
-};
+type ACTIONTYPE =
+  | {
+      type: "INPUT_CHANGE";
+      inputId: string;
+      isValid: boolean;
+      value: string;
+    }
+  | { type: "SET_DATA"; inputs: FormInputs; isValid: boolean };
 
-const formReducer = (state: typeof initialFormState, action: ACTIONTYPE) => {
+const formReducer = (state: FormState, action: ACTIONTYPE): FormState => {
   switch (action.type) {
     case "INPUT_CHANGE":
       let formIsValid = true;
@@ -32,8 +41,7 @@ const formReducer = (state: typeof initialFormState, action: ACTIONTYPE) => {
           formIsValid = formIsValid && action.isValid;
         } else {
           formIsValid =
-            formIsValid &&
-            state.inputs[inputId as keyof typeof state.inputs].isValid;
+            formIsValid && state.inputs[inputId as keyof FormInputs].isValid;
         }
       }
 
@@ -45,14 +53,21 @@ const formReducer = (state: typeof initialFormState, action: ACTIONTYPE) => {
         },
         isValid: formIsValid,
       };
+    case "SET_DATA":
+      return {
+        inputs: action.inputs,
+        isValid: action.isValid,
+      };
     default:
       return state;
   }
 };
 
-const Login = () => {
+const Auth = () => {
   const auth = useContext(AuthContext);
   const [formState, dispatch] = useReducer(formReducer, initialFormState);
+  // To handle switching between login and signup modes
+  const [isLoginMode, setIsLoginMode] = useState(true);
 
   // Use callback to prevent infinite loops
   const inputHandler = useCallback(
@@ -67,9 +82,37 @@ const Login = () => {
     []
   );
 
+  const setFormData = useCallback(
+    (inputs: FormInputs, isFormValid: boolean) => {
+      dispatch({
+        type: "SET_DATA",
+        inputs: inputs,
+        isValid: isFormValid,
+      });
+    },
+    []
+  );
+
   const submitHandler = (e: FormEvent) => {
     e.preventDefault();
     console.log(formState.inputs);
+  };
+
+  const switchModeHandler = () => {
+    if (isLoginMode) {
+      // Moving to signup mode
+      setFormData(
+        { ...formState.inputs, name: { value: "", isValid: false } },
+        false
+      );
+    } else {
+      // Moving to login mode
+      setFormData(
+        { email: formState.inputs.email, password: formState.inputs.password },
+        formState.inputs.email.isValid && formState.inputs.password.isValid
+      );
+    }
+    setIsLoginMode((prevMode) => !prevMode);
   };
 
   return (
@@ -89,9 +132,21 @@ const Login = () => {
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Create a new account
+              {isLoginMode ? "Sign in to your account" : "Create a new account"}
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={submitHandler}>
+              {!isLoginMode && (
+                <Input
+                  element={InputType.Input}
+                  id="name"
+                  label="Name"
+                  type="name"
+                  placeholder="Solomon"
+                  validators={[VALIDATOR_REQUIRE()]}
+                  errorText="Please enter a name."
+                  onInput={inputHandler}
+                />
+              )}
               <Input
                 element={InputType.Input}
                 id="email"
@@ -99,7 +154,7 @@ const Login = () => {
                 type="email"
                 placeholder="name@company.com"
                 validators={[VALIDATOR_REQUIRE(), VALIDATOR_EMAIL()]}
-                errorText="Invalid email"
+                errorText="Please enter a valid email"
                 onInput={inputHandler}
               />
               <Input
@@ -108,8 +163,14 @@ const Login = () => {
                 label="Password"
                 type="password"
                 placeholder="••••••••"
-                validators={[VALIDATOR_MINLENGTH(6)]}
-                errorText="Invalid password"
+                validators={
+                  isLoginMode ? [VALIDATOR_REQUIRE()] : [VALIDATOR_MINLENGTH(6)]
+                }
+                errorText={
+                  isLoginMode
+                    ? "Please enter your password"
+                    : "Password must be at least 6 characters long"
+                }
                 onInput={inputHandler}
               />
 
@@ -123,16 +184,19 @@ const Login = () => {
                 // onClick={auth.login}
                 disabled={!formState.isValid}
               >
-                Sign up
+                {isLoginMode ? "Sign In" : "Sign up"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account? &nbsp;
-                <a
-                  href="#"
+                {isLoginMode
+                  ? "Don't have an account yet?"
+                  : "Already have an account?"}{" "}
+                &nbsp;
+                <button
+                  onClick={switchModeHandler}
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
-                  Sign in
-                </a>
+                  {isLoginMode ? "Sign up" : "Sign in"}
+                </button>
               </p>
             </form>
           </div>
@@ -142,4 +206,11 @@ const Login = () => {
   );
 };
 
-export default Login;
+type FormInputs = { [key: string]: { value: string; isValid: boolean } };
+
+type FormState = {
+  inputs: FormInputs;
+  isValid: boolean;
+};
+
+export default Auth;
