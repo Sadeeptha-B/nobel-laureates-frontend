@@ -1,30 +1,34 @@
-# React + TypeScript + Vite
+# Nobel Laureates Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the Nobel Laureates Project. It is implemented with React on Vite with TypeScript. Styling is implemented with TailwindCSS with [Flowbite components](https://flowbite.com).
+The backend for this application is at [Nobel Laureates Backend](https://github.com/Sadeeptha-B/nobel-laureates-backend)
 
-Currently, two official plugins are available:
+## App features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Login and Signup pages with Form validation
+- Authentication with JWT with Access Tokens and Refresh Tokens (Implemented with storing Access Tokens on Local Storage and Refresh Tokens on Cookie Storage )
+- reCAPTCHA implementation (In progress)
+- Displaying a List of Laureates in an infinite scrollable page
 
-## Expanding the ESLint configuration
+Some features are still in progress, such as reCAPTCHA implementation and the UI for the Laureate Details page.
+These will be ironed out over 19/07/2023 and 20/07/2023 including deployment.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Running locally
 
-- Configure the top-level `parserOptions` property like this:
+Clone this github repository with
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```
+git clone https://github.com/Sadeeptha-B/nobel-laureates-backend.git
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+It is recommended to run this app with Node.js v20.15.1 (currently LTS). Install the dependencies for the project with `npm install` at the root directory of the project
+
+The app requires a .env file to store secrets. Create .env file at the root directory with the following
+
+```
+VITE_APP_SECRET_KEY=
+VITE_APP_SITE_KEY=
+VITE_APP_API_URL=
+```
+
+Secret key and site key are required for reCAPTCHA. API URL is for the locally running backend. Instructions for setting up the backend are in it's repository linked above
