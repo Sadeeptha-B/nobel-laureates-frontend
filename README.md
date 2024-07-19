@@ -2,6 +2,7 @@
 
 This is the frontend for the Nobel Laureates Project. It is implemented with React on Vite with TypeScript. Styling is implemented with TailwindCSS with [Flowbite components](https://flowbite.com).
 The backend for this application is at [Nobel Laureates Backend](https://github.com/Sadeeptha-B/nobel-laureates-backend)
+The overall tech stack for the solution is the MERN stack. With React, MongoDB, Express and Node, with TypeScript
 
 ## App features
 
@@ -18,7 +19,7 @@ These will be ironed out over 19/07/2023 and 20/07/2023 including deployment.
 Clone this github repository with
 
 ```
-git clone https://github.com/Sadeeptha-B/nobel-laureates-backend.git
+git clone https://github.com/Sadeeptha-B/nobel-laureates-frontend.git
 ```
 
 It is recommended to run this app with Node.js v20.15.1 (currently LTS). Install the dependencies for the project with `npm install` at the root directory of the project
