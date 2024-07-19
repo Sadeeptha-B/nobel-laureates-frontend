@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  json,
 } from "react-router-dom";
 import { AuthContext } from "./shared/context/auth-context";
 
@@ -12,37 +13,33 @@ import LaureateDetails from "./laureates/pages/LaureateDetails";
 import MainHeader from "./shared/components/Navigation/MainHeader";
 import About from "./laureates/pages/About";
 import Auth from "./auth/Auth";
-
-const AUTH_STORAGE_KEY = "UserData";
+import { USERDATA_STORAGE_KEY } from "./constants";
+import { getUserDataFromLocalStorage } from "./shared/utils/localstorage-helper";
+import UserData from "./models/UserData";
 
 function App() {
   const [token, setToken] = useState<string | null>();
   const [userId, setUserId] = useState<string | null>();
 
-  const login = useCallback((uid: string, token: string) => {
+  const login = useCallback((userId: string, email: string, token: string) => {
     setToken(token);
-    setUserId(uid);
+    setUserId(userId);
     localStorage.setItem(
-      AUTH_STORAGE_KEY,
-      JSON.stringify({ userId: uid, token: token })
-    );
+      USERDATA_STORAGE_KEY,
+      JSON.stringify({ userId, email, token } as UserData))
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     setUserId(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(USERDATA_STORAGE_KEY);
   }, []);
 
   // Called on mount
   useEffect(() => {
-    const userDataJson = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (userDataJson) {
-      const userData = JSON.parse(userDataJson);
-
-      if (userData.token) {
-        login(userData.userId, userData.userId);
-      }
+    const userData = getUserDataFromLocalStorage();
+    if (userData) {
+      login(userData.userId, userData.email, userData.token);
     }
   }, [login]);
 

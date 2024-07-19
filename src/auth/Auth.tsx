@@ -15,6 +15,7 @@ import {
 } from "../shared/utils/validators";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 import ErrorNotification from "../shared/components/UIElements/ErrorNotification";
+import { login, signup } from "../shared/api/api";
 
 // Types
 type FormInputs = { [key: string]: { value: string; isValid: boolean } };
@@ -107,38 +108,26 @@ const Auth = () => {
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(formState.inputs);
+
     try {
-      const endpoint = isLoginMode ? "login" : "signup";
-      const url = `${import.meta.env.VITE_APP_API_URL}/api/users/${endpoint}`;
-      const headers = { "Content-Type": "application/json" };
-      let body: { [key: string]: string } = {
-        email: formState.inputs.email.value,
-        password: formState.inputs.password.value,
-      };
-
-      if (!isLoginMode) {
-        body.name = formState.inputs.name.value;
-      }
-
-      const bodyJson = JSON.stringify(body);
-
       setAuthPending(true);
       setErrorMessage(undefined);
-      const response = await fetch(url, {
-        method: "POST",
-        headers,
-        body: bodyJson,
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Error model from backend will always send a message property
-        throw new Error(data);
+      let data;
+      if (isLoginMode) {
+        data = await login({
+          email: formState.inputs.email.value,
+          password: formState.inputs.password.value,
+        });
+      } else {
+        data = await signup({
+          name: formState.inputs.name.value,
+          email: formState.inputs.email.value,
+          password: formState.inputs.password.value,
+        });
       }
 
       setAuthPending(false);
-      auth.login(data.userId, data.token);
+      auth.login(data.userId, data.email, data.token);
     } catch (error: any) {
       setAuthPending(false);
       setErrorMessage(
