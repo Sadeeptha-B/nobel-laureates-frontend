@@ -15,7 +15,7 @@ import {
 } from "../shared/utils/validators";
 import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 import ErrorNotification from "../shared/components/UIElements/ErrorNotification";
-import { login, signup } from "../shared/api/api";
+import { login, signup } from "../shared/api/auth-api";
 
 // Types
 type FormInputs = { [key: string]: { value: string; isValid: boolean } };

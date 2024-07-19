@@ -5,11 +5,11 @@ import UserData from "../../models/UserData";
 
 const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
 
-const instance = axios.create({
-  baseURL: baseURL,
+export const apiInstance = axios.create({
+  baseURL: `${baseURL}/api/users`,
 });
 
-instance.interceptors.request.use((config) => {
+apiInstance.interceptors.request.use((config) => {
   const token = getTokenFromLocalStorage();
 
   if (token) {
@@ -19,7 +19,7 @@ instance.interceptors.request.use((config) => {
 });
 
 // Implementing token refresh
-instance.interceptors.response.use(
+apiInstance.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -31,15 +31,17 @@ instance.interceptors.response.use(
 
       try {
         const data = await generateRefreshToken();
+        console.log(data);
         const accessToken = data!.token;
 
         localStorage.setItem(USERDATA_STORAGE_KEY, JSON.stringify(data));
-        instance.defaults.headers.common[
+        apiInstance.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${accessToken}`;
-        return instance(originalRequest);
+        return apiInstance(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
+        // TODO: Implement logout
       }
     }
     return Promise.reject(error);
@@ -47,8 +49,8 @@ instance.interceptors.response.use(
 );
 
 export const login = async (formInputs: { [key: string]: string }) => {
-  const response = await instance.post(
-    "/api/users/login",
+  const response = await apiInstance.post(
+    "/login",
     {
       email: formInputs.email,
       password: formInputs.password,
@@ -67,7 +69,7 @@ export const login = async (formInputs: { [key: string]: string }) => {
 };
 
 export const signup = async (formInputs: { [key: string]: string }) => {
-  const response = await instance.post(
+  const response = await apiInstance.post(
     "/signup",
     {
       name: formInputs.name,
@@ -88,10 +90,11 @@ export const signup = async (formInputs: { [key: string]: string }) => {
 
 export const generateRefreshToken = async () => {
   try {
-    const response = await instance.get(`/refreshToken`, {
+    const response = await apiInstance.get(`/refreshToken`, {
       withCredentials: true,
     });
     const { data } = response;
+    console.log(data);
     return data as UserData;
   } catch (error: any) {
     console.error(error);
