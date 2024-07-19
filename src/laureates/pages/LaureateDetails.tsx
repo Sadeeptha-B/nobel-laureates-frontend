@@ -4,7 +4,7 @@ import Card from "../../shared/components/UIElements/Card";
 
 const DUMMY_DATA: Laureate[] = [
   {
-    id: "1",
+    id: "745",
     knownName: "Wilhelm Conrad Röntgen",
     // fullName: "Wilhelm Conrad Röntgen",
     gender: "male",
@@ -46,44 +46,104 @@ const LaureateDetails = () => {
   );
 
   if (!laureateData) {
-    return <h2>Couldn't find Laureate</h2>;
+    return (
+      <Card isFixedSize={true}>
+        <h2>Couldn't find Laureate</h2>
+      </Card>
+    );
   }
 
   const { knownName, birth, death, wikipedia, wikidata, nobelPrizes } =
     laureateData;
+  const dateData: [string, { date: string; location: string }][] = [
+    ["Birth", birth],
+    ["Death", death],
+  ];
+
+  const links: [string, string][] = [
+    ["Wikipedia", wikipedia],
+    ["Wikidata", wikidata],
+  ];
+
+  const prizeDetails = nobelPrizes.map((p) => [
+    ["Award Year", p.awardYear],
+    ["Category", p.category],
+    ["Prize Amount", p.prizeAmount],
+    ["Prize Status", p.prizeStatus],
+    ["Date Awarded", p.dateAwarded.toDateString()],
+  ]);
+
   return (
     <>
-      <div className="grid grid-cols-2 grid-rows-2">
-        <h1>{knownName}</h1>
-        <aside>
-          <h2>Links</h2>
-          <h2>{wikipedia}</h2>
-          <h2>{wikidata}</h2>
-        </aside>
+      <div className="md:grid md:grid-cols-2 ">
+        <Card isFixedSize={false}>
+          <section>
+            <h1 className="font-semibold text-xl dark:text-white ml-5">
+              {knownName}
+            </h1>
+            <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
+            {dateData.map((d) => (
+              <>
+                <h2 className="text-xl dark:text-white ml-5">{d[0]}</h2>
+                <div className="m-5">
+                  <p>
+                    <span className="font-semibold">Date:</span> {d[1].date}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Location:</span>{" "}
+                    {d[1].location}
+                  </p>
+                </div>
+              </>
+            ))}
+          </section>
+        </Card>
+        <Card isFixedSize={false}>
+          <aside>
+            <h2 className="text-xl dark:text-white ml-5">Links</h2>
+            {links.map((l) => (
+              <div className="mt-4">
+                <h2 className="text-lg dark:text-white ml-5">{l[0]}</h2>
+                <p className="ml-5 font-medium text-blue-600 dark:text-blue-500 hover:underline break-words">
+                  {l[1]}
+                </p>
+              </div>
+            ))}
+          </aside>
+        </Card>
 
-        <section>
-          <h3>{birth.date}</h3>
-          <h3>{birth.location}</h3>
-          <h3>{death.date}</h3>
-          <h3>{death.location}</h3>
-        </section>
-        <section>
-          {nobelPrizes.map((prize) => (
-            <>
-              <h3>{prize.awardYear}</h3>
-              <h3>{prize.category}</h3>
-              <h3>{prize.categoryFullName}</h3>
-              <h3>{prize.motivation}</h3>
-              <h3>{prize.prizeAmount}</h3>
-              <h3>{prize.prizeStatus}</h3>
-              <h3>{prize.dateAwarded.toDateString()}</h3>
-            </>
+        <section className="col-span-2">
+          <h3 className="m-6 text-xl font-bold leading-none text-gray-900 dark:text-white">
+            {" "}
+            Nobel Prizes won{" "}
+          </h3>
+          {nobelPrizes.map((prize, index) => (
+            <Card isFixedSize={false}>
+              <h1 className="font-semibold text-xl dark:text-white ml-5">
+                {prize.categoryFullName}
+              </h1>
+              <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
+              <h2 className="text-xl dark:text-white ml-5">Prize Details</h2>
+              <div className="m-5">
+                {prizeDetails[index].map((p) => (
+                  <p>
+                    <span className="font-semibold">{p[0]}:</span> {p[1]}
+                  </p>
+                ))}
+              </div>
+              <div className="mt-6">
+                <h2 className="text-xl dark:text-white ml-5">Motivation</h2>
+                <p className="m-5 first-letter:uppercase">{prize.motivation}</p>
+              </div>
+            </Card>
           ))}
         </section>
       </div>
 
       {/* Comment */}
-      <h3 className="text-xl dark:text-white ml-5">Comments</h3>
+      <h3 className="m-6 text-xl font-bold leading-none text-gray-900 dark:text-white">
+        Comments
+      </h3>
       <div className="m-10">
         <div className="flex items-start gap-2.5 shadow-md rounded-lg">
           <img

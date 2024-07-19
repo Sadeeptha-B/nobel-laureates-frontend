@@ -5,7 +5,7 @@ import Card from "../../shared/components/UIElements/Card";
 const LaureateItem = ({ id, knownName, prizes }: LaureateItemDetails) => {
   return (
     <li key={id}>
-      <Card>
+      <Card isFixedSize={true}>
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
           {knownName}
         </h5>

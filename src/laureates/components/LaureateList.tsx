@@ -1,5 +1,4 @@
 import { LaureateItemDetails } from "../../models/Laureate";
-import Card from "../../shared/components/UIElements/Card";
 import LaureateItem from "./LaureateItem";
 
 const LaureateList = ({ items }: { items: LaureateItemDetails[] }) => {
