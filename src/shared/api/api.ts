@@ -5,11 +5,11 @@ import UserData from "../../models/UserData";
 
 const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
 
-const customAxios = axios.create({
+const instance = axios.create({
   baseURL: baseURL,
 });
 
-customAxios.interceptors.request.use((config) => {
+instance.interceptors.request.use((config) => {
   const token = getTokenFromLocalStorage();
 
   if (token) {
@@ -19,7 +19,7 @@ customAxios.interceptors.request.use((config) => {
 });
 
 // Implementing token refresh
-customAxios.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -34,10 +34,10 @@ customAxios.interceptors.response.use(
         const accessToken = data!.token;
 
         localStorage.setItem(USERDATA_STORAGE_KEY, JSON.stringify(data));
-        customAxios.defaults.headers.common[
+        instance.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${accessToken}`;
-        return customAxios(originalRequest);
+        return instance(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
       }
@@ -47,7 +47,7 @@ customAxios.interceptors.response.use(
 );
 
 export const login = async (formInputs: { [key: string]: string }) => {
-  const response = await customAxios.post(
+  const response = await instance.post(
     "/api/users/login",
     {
       email: formInputs.email,
@@ -67,7 +67,7 @@ export const login = async (formInputs: { [key: string]: string }) => {
 };
 
 export const signup = async (formInputs: { [key: string]: string }) => {
-  const response = await customAxios.post(
+  const response = await instance.post(
     "/signup",
     {
       name: formInputs.name,
@@ -88,7 +88,7 @@ export const signup = async (formInputs: { [key: string]: string }) => {
 
 export const generateRefreshToken = async () => {
   try {
-    const response = await customAxios.get(`/refreshToken`, {
+    const response = await instance.get(`/refreshToken`, {
       withCredentials: true,
     });
     const { data } = response;

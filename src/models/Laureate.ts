@@ -1,47 +1,51 @@
 import { NobelItemDetails, NobelPrize } from "./NobelPrize";
 
-export interface Laureate {
+
+export class Laureate {
+  // Body is based on the API response from nobels api
+  static fromJson(body: any) {
+    const id = body.id;
+    const knownName = body.knownName.en;
+    const gender = body.gender;
+    const birth = {
+      date: body.birth.date,
+      location: body.birth.place.locationString.en,
+    };
+    // Null check this
+    const death = {
+      date: body.death.date,
+      location: body.death.place.locationString.en,
+    };
+    const wikipedia = body.wikipedia.english;
+    const wikidata = body.wikidata.english;
+    const nobelPrizes = body.nobelPrizes.map((p:any)=> NobelPrize.fromJson(p));
+
+    return new Laureate(
+      id,
+      knownName,
+      gender,
+      birth,
+      death,
+      wikipedia,
+      wikidata,
+      nobelPrizes
+    );
+  }
+
+  constructor(
+    private id: string,
+    public knownName: string,
+    public gender: string,
+    public birth: { date: string; location: string },
+    public death: { date: string; location: string },
+    public wikipedia: string,
+    public wikidata: string,
+    public nobelPrizes: NobelPrize[]
+  ) {}
+}
+
+export interface LaureateItemDetails {
   id: string;
   knownName: string;
-  gender: string;
-  birth: {
-    date: string;
-    location: string;
-  };
-  death:{
-    date: string;
-    location: string;
-  }
-  wikipedia: string;
-  wikidata: string;
-  nobelPrizes: NobelPrize[]
+  prizes: NobelItemDetails[];
 }
-
-
-export interface LaureateItemDetails{
-    id: "1"
-    knownName: string;
-    prizes: NobelItemDetails[]
-}
-
-
-//  data.map((item: any) => {
-//         const d = {
-//           id: item.id,
-//           knownName: item.knownName,
-//           gender: item.gender,
-//           birth: {
-//             date: item.birth.date,
-//             location: item.birth.place.locationString.en
-//           },
-//           death: {
-//             date: item.death.date,
-//             location: item.death.place.locationString.en
-//           },
-//           wikipedia: item.wikipedia.english,
-//           wikidata: item.wikidata.url,
-//           nobelPrizes: []
-//         } as Laureate
-
-//         d.nob
-//       })
