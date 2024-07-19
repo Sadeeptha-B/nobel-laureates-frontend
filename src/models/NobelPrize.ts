@@ -1,4 +1,3 @@
-
 export class NobelPrize {
   static fromJson(body: any) {
     const awardYear = body.awardYear;
@@ -8,10 +7,6 @@ export class NobelPrize {
     const dateAwarded = body.dateAwarded;
     const prizeStatus = body.prizeStatus;
     const prizeAmount = body.prizeAmount;
-    const affiliations = body.affiliations.map((a: any) => ({
-      name: a.name,
-      location: a.locationStringpublic .en,
-    }));
 
     return new NobelPrize(
       awardYear,
@@ -21,7 +16,6 @@ export class NobelPrize {
       dateAwarded,
       prizeStatus,
       prizeAmount,
-      affiliations
     );
   }
 
@@ -30,10 +24,9 @@ export class NobelPrize {
     public category: string,
     public categoryFullName: string,
     public motivation: string,
-    public dateAwarded: Date,
+    public dateAwarded: string,
     public prizeStatus: string,
     public prizeAmount: number,
-    public affiliations: Affiliation[]
   ) {}
 }
 
@@ -44,7 +37,3 @@ export interface NobelItemDetails {
   categoryFullName: string;
 }
 
-interface Affiliation {
-  name: string;
-  location: string;
-}

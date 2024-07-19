@@ -1,77 +1,84 @@
 import { useParams } from "react-router-dom";
 import { Laureate } from "../../models/Laureate";
 import Card from "../../shared/components/UIElements/Card";
+import { useEffect, useState } from "react";
+import { getLaureateDataById } from "../../shared/api/nobel-api";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
-const DUMMY_DATA: Laureate[] = [
-  {
-    id: "745",
-    knownName: "Wilhelm Conrad Röntgen",
-    // fullName: "Wilhelm Conrad Röntgen",
-    gender: "male",
-    birth: {
-      date: "1845-03-27",
-      location: "Lennep, Prussia (now Remscheid, Germany)",
-    },
-    death: {
-      date: "1923-02-10",
-      location: "Munich, Germany",
-    },
-    wikipedia: "https://en.wikipedia.org/wiki/Wilhelm_Röntgen",
-    wikidata: "https://www.wikidata.org/wiki/Q3097",
-    nobelPrizes: [
-      {
-        awardYear: "1901",
-        category: "Physics",
-        categoryFullName: "The Nobel Prize in Physics",
-        motivation:
-          "in recognition of the extraordinary services he has rendered by the discovery of the remarkable rays subsequently named after him",
-        dateAwarded: new Date("1901-11-12"),
-        prizeStatus: "received",
-        prizeAmount: 150782,
-        affiliations: [
-          {
-            name: "Munich University",
-            location: "Munich, Germany",
-          },
-        ],
-      },
+type DetailState = {
+  laureateProfile: Laureate;
+  dateData: [string, Laureate["birth"]][];
+  links: [string, string][];
+  prizeDetails: [string, string | number][][];
+};
+
+const prepareState = (laureateProfile: Laureate) => {
+  const dateData = [["Birth", laureateProfile.birth]];
+
+  if (laureateProfile.death.date) {
+    dateData.push(["Death", laureateProfile.death]);
+  }
+
+  const laureateDetails: DetailState = {
+    laureateProfile: laureateProfile,
+    dateData: dateData as [string, Laureate["birth"]][],
+    links: [
+      ["Wikipedia", laureateProfile.wikipedia],
+      ["Wikidata", laureateProfile.wikidata],
     ],
-  },
-];
+    prizeDetails: laureateProfile.nobelPrizes.map((p) => [
+      ["Award Year", p.awardYear],
+      ["Category", p.category],
+      ["Prize Amount", p.prizeAmount],
+      ["Prize Status", p.prizeStatus],
+      ["Date Awarded", p.dateAwarded],
+    ]),
+  };
+
+  return laureateDetails;
+};
 
 const LaureateDetails = () => {
   const laureateId = useParams().laureateId;
-  const laureateData = DUMMY_DATA.find(
-    (laureate) => laureate.id === laureateId
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [laureateDetails, setLaureateDetails] = useState<DetailState>();
 
-  if (!laureateData) {
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      if (!laureateId) {
+        console.log("No laureate id");
+        return;
+      }
+      try {
+        const data = await getLaureateDataById(laureateId);
+        const laureateProfile = Laureate.fromJson(data[0]);
+
+        const laureateDetails: DetailState = prepareState(laureateProfile);
+        setLaureateDetails(laureateDetails);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [getLaureateDataById, laureateId]);
+
+  if (!laureateDetails) {
     return (
-      <Card isFixedSize={true}>
-        <h2>Couldn't find Laureate</h2>
-      </Card>
+      <div className="m-10 flex items-center justify-center">
+        {isLoading ? (
+          <LoadingSpinner asOverlay />
+        ) : (
+          <Card isFixedSize={true}>
+            <h2>Couldn't find Laureate Data</h2>
+          </Card>
+        )}
+      </div>
     );
   }
-
-  const { knownName, birth, death, wikipedia, wikidata, nobelPrizes } =
-    laureateData;
-  const dateData: [string, { date: string; location: string }][] = [
-    ["Birth", birth],
-    ["Death", death],
-  ];
-
-  const links: [string, string][] = [
-    ["Wikipedia", wikipedia],
-    ["Wikidata", wikidata],
-  ];
-
-  const prizeDetails = nobelPrizes.map((p) => [
-    ["Award Year", p.awardYear],
-    ["Category", p.category],
-    ["Prize Amount", p.prizeAmount],
-    ["Prize Status", p.prizeStatus],
-    ["Date Awarded", p.dateAwarded.toDateString()],
-  ]);
 
   return (
     <>
@@ -79,33 +86,34 @@ const LaureateDetails = () => {
         <Card isFixedSize={false}>
           <section>
             <h1 className="font-semibold text-xl dark:text-white ml-5">
-              {knownName}
+              {laureateDetails.laureateProfile.knownName}
             </h1>
             <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
-            {dateData.map((d) => (
-              <>
+            {laureateDetails.dateData.map((d, i) => (
+              <div key={i}>
                 <h2 className="text-xl dark:text-white ml-5">{d[0]}</h2>
                 <div className="m-5">
                   <p>
-                    <span className="font-semibold">Date:</span> {d[1].date}
+                    <span className="font-semibold">Date:</span>{" "}
+                    {d[1].date || "-"}
                   </p>
                   <p>
                     <span className="font-semibold">Location:</span>{" "}
-                    {d[1].location}
+                    {d[1].location || "-"}
                   </p>
                 </div>
-              </>
+              </div>
             ))}
           </section>
         </Card>
         <Card isFixedSize={false}>
           <aside>
             <h2 className="text-xl dark:text-white ml-5">Links</h2>
-            {links.map((l) => (
-              <div className="mt-4">
+            {laureateDetails.links.map((l, i) => (
+              <div className="mt-4" key={i}>
                 <h2 className="text-lg dark:text-white ml-5">{l[0]}</h2>
-                <p className="ml-5 font-medium text-blue-600 dark:text-blue-500 hover:underline break-words">
-                  {l[1]}
+                <p className="ml-5 font-medium text-blue-600 dark:text-blue-500 break-words">
+                  {l[1] || "-"}
                 </p>
               </div>
             ))}
@@ -117,25 +125,29 @@ const LaureateDetails = () => {
             {" "}
             Nobel Prizes won{" "}
           </h3>
-          {nobelPrizes.map((prize, index) => (
-            <Card isFixedSize={false}>
-              <h1 className="font-semibold text-xl dark:text-white ml-5">
-                {prize.categoryFullName}
-              </h1>
-              <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
-              <h2 className="text-xl dark:text-white ml-5">Prize Details</h2>
-              <div className="m-5">
-                {prizeDetails[index].map((p) => (
-                  <p>
-                    <span className="font-semibold">{p[0]}:</span> {p[1]}
+          {laureateDetails.laureateProfile.nobelPrizes.map((prize, index) => (
+            <div key={index}>
+              <Card isFixedSize={false}>
+                <h1 className="font-semibold text-xl dark:text-white ml-5">
+                  {prize.categoryFullName}
+                </h1>
+                <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
+                <h2 className="text-xl dark:text-white ml-5">Prize Details</h2>
+                <div className="m-5">
+                  {laureateDetails.prizeDetails[index].map((p, i) => (
+                    <p key={i}>
+                      <span className="font-semibold">{p[0]}:</span> {p[1]}
+                    </p>
+                  ))}
+                </div>
+                <div className="mt-6">
+                  <h2 className="text-xl dark:text-white ml-5">Motivation</h2>
+                  <p className="m-5 first-letter:uppercase">
+                    {prize.motivation}
                   </p>
-                ))}
-              </div>
-              <div className="mt-6">
-                <h2 className="text-xl dark:text-white ml-5">Motivation</h2>
-                <p className="m-5 first-letter:uppercase">{prize.motivation}</p>
-              </div>
-            </Card>
+                </div>
+              </Card>
+            </div>
           ))}
         </section>
       </div>

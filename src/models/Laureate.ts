@@ -1,24 +1,25 @@
 import { NobelItemDetails, NobelPrize } from "./NobelPrize";
 
-
 export class Laureate {
   // Body is based on the API response from nobels api
   static fromJson(body: any) {
     const id = body.id;
-    const knownName = body.knownName.en;
+    const knownName = body.knownName?.en ?? body.fullName.en;
     const gender = body.gender;
     const birth = {
-      date: body.birth.date,
-      location: body.birth.place.locationString.en,
+      date: body.birth?.date,
+      location: body.birth?.place?.locationString.en,
     };
     // Null check this
     const death = {
-      date: body.death.date,
-      location: body.death.place.locationString.en,
+      date: body.death?.date,
+      location: body.death?.place.locationString.en,
     };
     const wikipedia = body.wikipedia.english;
     const wikidata = body.wikidata.english;
-    const nobelPrizes = body.nobelPrizes.map((p:any)=> NobelPrize.fromJson(p));
+    const nobelPrizes = body.nobelPrizes.map((p: any) =>
+      NobelPrize.fromJson(p)
+    );
 
     return new Laureate(
       id,

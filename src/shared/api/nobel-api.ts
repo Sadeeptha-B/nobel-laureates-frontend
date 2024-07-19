@@ -8,7 +8,6 @@ const instance = axios.create({
 
 export const getLaureateDataById = async (laureateId: string) => {
   try {
-    console.log("I run");
     const response = await instance.get(`/laureate/${laureateId}`);
 
     const { data } = response;
