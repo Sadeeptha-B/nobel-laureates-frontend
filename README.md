@@ -31,4 +31,10 @@ VITE_APP_SITE_KEY=
 VITE_APP_API_URL=
 ```
 
-Secret key and site key are required for reCAPTCHA. API URL is for the locally running backend. Instructions for setting up the backend are in it's repository linked above
+Secret key and site key are required for reCAPTCHA. API URL is for the locally running backend. Instructions for setting up the backend are in it's repository linked above.
+
+After setting up the .env file, run the project with
+
+```
+npm run dev
+```
