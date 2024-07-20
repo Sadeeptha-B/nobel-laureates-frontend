@@ -1,34 +1,16 @@
-import axios from "axios";
-import { getTokenFromLocalStorage } from "../utils/localstorage-helper";
+import { get } from "../utils/api-helper";
+import { instance } from "./auth-api";
 
-const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
-
-export const instance = axios.create({
-  baseURL: `${baseURL}/api/comments`,
-});
-
-instance.interceptors.request.use((config) => {
-  const token = getTokenFromLocalStorage();
-
-  if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`;
-  }
-  return config;
-});
-
+// Using same instance as auth api since it's the same domain and for simplicity
+// import { instance } from "../components/Utils/AxiosErrorHandler";
+// of sharing the interception logic. Might not be best practice
 export const getCommentsByLaureateId = async (laureateId: string) => {
-  try {
-    const response = await instance.get(`/laureate/${laureateId}`);
-    const { data } = response;
-
-    if (response.status === 200) {
-      return data.comments;
-    } else {
-      throw new Error(data);
-    }
-  } catch (error) {
-    console.log(`Error getting comments for Laureate Id: ${laureateId}`);
-  }
+  const data = await get(
+    instance,
+    `api/comments/laureate/${laureateId}`,
+    `Error getting comments for Laureate Id: ${laureateId}`
+  );
+  return data.comments;
 };
 
 export const postComment = async () => {};

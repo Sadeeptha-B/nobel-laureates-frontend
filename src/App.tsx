@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   Navigate,
-  json,
 } from "react-router-dom";
 import { AuthContext } from "./shared/context/auth-context";
 
@@ -26,7 +25,8 @@ function App() {
     setUserId(userId);
     localStorage.setItem(
       USERDATA_STORAGE_KEY,
-      JSON.stringify({ userId, email, token } as UserData))
+      JSON.stringify({ userId, email, token } as UserData)
+    );
   }, []);
 
   const logout = useCallback(() => {
@@ -61,10 +61,12 @@ function App() {
     <AuthContext.Provider
       value={{ isLoggedIn: !!token, token, userId, login, logout }}
     >
+      {/* <AxiosErrorHandler> */}
       <Router>
         <MainHeader />
         <main className="mt-5">{routes}</main>
       </Router>
+      {/* </AxiosErrorHandler> */}
     </AuthContext.Provider>
   );
 }

@@ -19,6 +19,14 @@ export class NobelPrize {
     );
   }
 
+  toNobelItemDetails(){
+    return {
+      awardYear: this.awardYear,
+      category: this.category,
+      categoryFullName: this.categoryFullName
+    } as NobelItemDetails
+  }
+
   constructor(
     public awardYear: string,
     public category: string,

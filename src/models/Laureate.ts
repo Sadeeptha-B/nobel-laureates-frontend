@@ -10,7 +10,6 @@ export class Laureate {
       date: body.birth?.date,
       location: body.birth?.place?.locationString.en,
     };
-    // Null check this
     const death = {
       date: body.death?.date,
       location: body.death?.place.locationString.en,
@@ -31,6 +30,14 @@ export class Laureate {
       wikidata,
       nobelPrizes
     );
+  }
+
+  toLaureateItemDetails() {
+    return {
+      id: this.id,
+      knownName: this.knownName,
+      prizes: this.nobelPrizes.map((p) => p.toNobelItemDetails()),
+    } as LaureateItemDetails;
   }
 
   constructor(
