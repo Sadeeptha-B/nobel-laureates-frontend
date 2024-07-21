@@ -7,7 +7,6 @@ import {
 } from "../../shared/api/comments-api";
 import { Comment } from "../../models/Comment";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import { AuthContext } from "../../shared/context/auth-context";
 
 type CommentSectionProps = {
   laureateId: string | undefined;

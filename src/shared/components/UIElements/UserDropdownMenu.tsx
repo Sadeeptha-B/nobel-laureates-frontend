@@ -1,9 +1,27 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/auth-context";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import { getAuthenticatedUserDetails } from "../../api/auth-api";
+import { UserDetails } from "../../../models/UserData";
 
 const UserDropdownMenu = () => {
   const auth = useContext(AuthContext);
+  const [userDetails, setUserDetails] = useState<UserDetails>();
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const data = await getAuthenticatedUserDetails();
+        setUserDetails(data as UserDetails);
+      } catch (error) {
+        console.log("I run");
+        auth.logout();
+        // TODO: Show some indication to the user
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   return (
     <>
@@ -37,14 +55,14 @@ const UserDropdownMenu = () => {
         className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
         id="user-dropdown"
       >
-        {auth.isLoggedIn && (
+        {userDetails && (
           <>
             <div className="px-4 py-3">
               <span className="block text-sm text-gray-900 dark:text-white">
-                Bonnie Green
+                {userDetails.name}
               </span>
               <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
-                name@flowbite.com
+                {userDetails.email}
               </span>
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">

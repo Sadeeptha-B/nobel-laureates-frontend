@@ -14,7 +14,7 @@ import About from "./laureates/pages/About";
 import Auth from "./auth/Auth";
 import { USERDATA_STORAGE_KEY } from "./constants";
 import { getUserDataFromLocalStorage } from "./shared/utils/localstorage-helper";
-import UserData from "./models/UserData";
+import {UserAuthData} from "./models/UserData";
 
 function App() {
   const [token, setToken] = useState<string | null>();
@@ -25,7 +25,7 @@ function App() {
     setUserId(userId);
     localStorage.setItem(
       USERDATA_STORAGE_KEY,
-      JSON.stringify({ userId, email, token } as UserData)
+      JSON.stringify({ userId, email, token } as UserAuthData)
     );
   }, []);
 

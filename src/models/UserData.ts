@@ -1,8 +1,14 @@
 // Model auth related path user data
-interface UserData {
+export interface UserAuthData {
   userId: string;
   email: string;
   token: string;
 }
 
-export default UserData;
+export interface UserDetails {
+  userId: string;
+  name: string;
+  email: string;
+}
+
+ 

@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios, { InternalAxiosRequestConfig } from "axios";
 import { USERDATA_STORAGE_KEY } from "../../constants";
 import { getTokenFromLocalStorage } from "../utils/localstorage-helper";
-import UserData from "../../models/UserData";
 import { get } from "../utils/api-helper";
 // import { instance } from "../components/Utils/AxiosErrorHandler";
 
 const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
+const tokenRefreshURL = "/api/users/refreshToken";
 
 export const instance = axios.create({
   baseURL: baseURL,
@@ -28,8 +28,14 @@ instance.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config;
+    const isRefreshURL = tokenRefreshURL === originalRequest.url;
 
-    if (error.response.status === 403 && !originalRequest._retry) {
+    // When the refresh url fails, it will cause an infinite loop. So the refresh url is filtered.
+    if (
+      error.response.status === 403 &&
+      !originalRequest._retry &&
+      !isRefreshURL
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -84,10 +90,15 @@ export const signup = async (formInputs: { [key: string]: string }) => {
 };
 
 export const refreshAccessToken = async () => {
+  const data = get(instance, tokenRefreshURL, "Error generating access token");
+  return data;
+};
+
+export const getAuthenticatedUserDetails = async () => {
   const data = get(
     instance,
-    "/api/users/refreshToken",
-    "Error generating access token"
+    "api/users/getAuthUser",
+    "Error retrieving authenticated user"
   );
   return data;
 };
