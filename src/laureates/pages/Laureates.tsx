@@ -3,14 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Laureate, LaureateItemDetails } from "../../models/Laureate";
 import LaureateList from "../components/LaureateList";
 import FilteredSearch from "../../shared/components/UIElements/FilteredSearch";
-import { getLaureates } from "../../shared/api/nobel-api";
+import { GENDERS, LAUREATES_FETCH_OFFSET, NOBEL_PRIZE_CATEGORIES, getLaureates } from "../../shared/api/nobel-api";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Select from "../../shared/components/UIElements/Select";
-import {
-  GENDERS,
-  LAUREATES_FETCH_OFFSET,
-  NOBEL_PRIZE_CATEGORIES,
-} from "../../constants";
 
 // Currently supported filters
 const initialFilterState = {

@@ -92,6 +92,12 @@ const LaureateDetails = () => {
             <h1 className="font-semibold text-xl dark:text-white ml-5">
               {laureateDetails.laureateProfile.knownName}
             </h1>
+            <p className="mx-5 mt-2">
+              <span className="font-semibold">Gender :</span>{" "}
+              <span className="inline-block first-letter:uppercase">
+                {laureateDetails.laureateProfile.gender}
+              </span>
+            </p>
             <hr className="h-px mt-8 mb-5 bg-gray-200 border-0 dark:bg-gray-700" />
             {laureateDetails.dateData.map((d, i) => (
               <div key={i}>

@@ -2,13 +2,27 @@ import { Link } from "react-router-dom";
 import { LaureateItemDetails } from "../../models/Laureate";
 import Card from "../../shared/components/UIElements/Card";
 
-const LaureateItem = ({ id, knownName, prizes }: LaureateItemDetails) => {
+const LaureateItem = ({
+  id,
+  knownName,
+  prizes,
+  birthYear,
+  deathYear,
+}: LaureateItemDetails) => {
   return (
     <li key={id}>
       <Card isFixedSize={true}>
         <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
           {knownName}
         </h5>
+        <div className="flex justify-between mt-3">
+          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+            Birth Year: {birthYear || "-"}
+          </p>
+          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+            Death Year: {deathYear || "-"}
+          </p>
+        </div>
         {prizes.map((prize, index) => (
           <div className="flex items-center m-6 gap-10" key={index}>
             <div className="flex-1 min-w-0 ms-4">

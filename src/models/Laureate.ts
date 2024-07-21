@@ -36,6 +36,8 @@ export class Laureate {
     return {
       id: this.id,
       knownName: this.knownName,
+      birthYear: this.birth?.date && extractYear(this.birth.date),
+      deathYear: this.death?.date && extractYear(this.death.date),
       prizes: this.nobelPrizes.map((p) => p.toNobelItemDetails()),
     } as LaureateItemDetails;
   }
@@ -52,8 +54,14 @@ export class Laureate {
   ) {}
 }
 
+const extractYear = (dateStr: string) => {
+  return dateStr.split("-")[0];
+};
+
 export interface LaureateItemDetails {
   id: string;
   knownName: string;
+  birthYear?: string;
+  deathYear?: string;
   prizes: NobelItemDetails[];
 }

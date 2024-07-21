@@ -21,6 +21,8 @@ const LaureateList = ({ items }: { items: LaureateItemDetails[] }) => {
           id={item.id}
           knownName={item.knownName}
           prizes={item.prizes}
+          birthYear={item.birthYear}
+          deathYear={item.deathYear}
         />
       ))}
     </ul>
