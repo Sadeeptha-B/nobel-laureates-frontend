@@ -10,7 +10,7 @@ type InputProps = {
   rows?: number;
   validators: ValidationData[];
   errorText: string;
-  onInput: any;
+  onInput: (id: string, value: string, isValid: boolean) => void;
 };
 
 type ACTIONTYPE =

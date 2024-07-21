@@ -50,6 +50,7 @@ instance.interceptors.response.use(
   }
 );
 
+// Try catch error handling is delegated to component
 export const login = async (formInputs: { [key: string]: string }) => {
   const response = await instance.post("/api/users/login", {
     email: formInputs.email,

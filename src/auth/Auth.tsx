@@ -222,7 +222,6 @@ const Auth = () => {
               <button
                 type="submit"
                 className="w-full text-white disabled:bg-blue-400 dark:disabled:bg-blue-500 disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                // onClick={auth.login}
                 disabled={!formState.isValid}
               >
                 {isLoginMode ? "Sign In" : "Sign up"}

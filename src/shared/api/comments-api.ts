@@ -7,10 +7,28 @@ import { instance } from "./auth-api";
 export const getCommentsByLaureateId = async (laureateId: string) => {
   const data = await get(
     instance,
-    `api/comments/laureate/${laureateId}`,
+    `api/comments/laureate/${laureateId}`, // TODO: Convert to query param req
     `Error getting comments for Laureate Id: ${laureateId}`
   );
   return data.comments;
 };
 
-export const postComment = async () => {};
+export const postComment = async (
+  userId: string,
+  laureateId: string,
+  content: string
+) => {
+  const response = await instance.post("api/comments/", {
+    userId,
+    laureateId,
+    content,
+  });
+
+  const {data} = response;
+
+  if (response.status === 201){
+    return data;
+  } else {
+    throw new Error(data);
+  }
+};
