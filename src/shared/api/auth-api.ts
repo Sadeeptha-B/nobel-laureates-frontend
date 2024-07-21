@@ -2,12 +2,14 @@ import axios from "axios";
 import { USERDATA_STORAGE_KEY } from "../../constants";
 import { getTokenFromLocalStorage } from "../utils/localstorage-helper";
 import UserData from "../../models/UserData";
+import { get } from "../utils/api-helper";
 // import { instance } from "../components/Utils/AxiosErrorHandler";
 
 const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
 
 export const instance = axios.create({
   baseURL: baseURL,
+  withCredentials: true,
 });
 
 instance.interceptors.request.use((config) => {
@@ -31,8 +33,7 @@ instance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const data = await generateRefreshToken();
-        console.log(data);
+        const data = await refreshAccessToken();
         const accessToken = data!.token;
 
         localStorage.setItem(USERDATA_STORAGE_KEY, JSON.stringify(data));
@@ -50,14 +51,10 @@ instance.interceptors.response.use(
 );
 
 export const login = async (formInputs: { [key: string]: string }) => {
-  const response = await instance.post(
-    "/api/users/login",
-    {
-      email: formInputs.email,
-      password: formInputs.password,
-    },
-    { withCredentials: true }
-  );
+  const response = await instance.post("/api/users/login", {
+    email: formInputs.email,
+    password: formInputs.password,
+  });
 
   const { data } = response;
 
@@ -70,15 +67,11 @@ export const login = async (formInputs: { [key: string]: string }) => {
 };
 
 export const signup = async (formInputs: { [key: string]: string }) => {
-  const response = await instance.post(
-    "/api/users/signup",
-    {
-      name: formInputs.name,
-      email: formInputs.email,
-      password: formInputs.password,
-    },
-    { withCredentials: true }
-  );
+  const response = await instance.post("/api/users/signup", {
+    name: formInputs.name,
+    email: formInputs.email,
+    password: formInputs.password,
+  });
 
   const { data } = response;
 
@@ -89,15 +82,11 @@ export const signup = async (formInputs: { [key: string]: string }) => {
   }
 };
 
-export const generateRefreshToken = async () => {
-  try {
-    const response = await instance.get(`/api/users/refreshToken`, {
-      withCredentials: true,
-    });
-    const { data } = response;
-
-    return data as UserData;
-  } catch (error: any) {
-    console.error(error);
-  }
+export const refreshAccessToken = async () => {
+  const data = get(
+    instance,
+    "/api/users/refreshToken",
+    "Error generating access token"
+  );
+  return data;
 };

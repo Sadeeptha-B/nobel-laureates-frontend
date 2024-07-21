@@ -1,13 +1,17 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Laureate, LaureateItemDetails } from "../../models/Laureate";
 import LaureateList from "../components/LaureateList";
-import FilterComponent from "../../shared/components/UIElements/FilterComponent";
+import SearchComponent from "../../shared/components/UIElements/SearchComponent";
 import { getLaureates } from "../../shared/api/nobel-api";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Card from "../../shared/components/UIElements/Card";
-
-const FETCH_OFFSET = 25;
+import FilterComponent from "../../shared/components/UIElements/FilterComponent";
+import {
+  GENDERS,
+  LAUREATES_FETCH_OFFSET,
+  NOBEL_PRIZE_CATEGORIES,
+} from "../../constants";
 
 const Laureates = () => {
   const [items, setItems] = useState<LaureateItemDetails[]>([]);
@@ -22,7 +26,7 @@ const Laureates = () => {
     observer.current = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry.isIntersecting) {
-        setOffset((prev) => prev + FETCH_OFFSET);
+        setOffset((prev) => prev + LAUREATES_FETCH_OFFSET);
       }
     });
 
@@ -66,9 +70,18 @@ const Laureates = () => {
 
   return (
     <>
-      <FilterComponent />
-      {isLoading && <LoadingSpinner asOverlay />}
+      <div className="flex justify-end">
+        <FilterComponent category="Prize Categories" options={NOBEL_PRIZE_CATEGORIES} />
+        <FilterComponent category="Gender" options={GENDERS} />
+        <SearchComponent options={["Birth Year", "Death Year"]} />
+      </div>
       <LaureateList items={items} />
+
+      {isLoading && (
+        <div className="m-10 flex items-center justify-center">
+          <LoadingSpinner asOverlay />
+        </div>
+      )}
       <div ref={setObserver}></div>
     </>
   );

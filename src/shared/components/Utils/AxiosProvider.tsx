@@ -1,7 +1,7 @@
 import { ReactNode, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/auth-context";
 import axios from "axios";
-import { generateRefreshToken } from "../../api/auth-api";
+import { refreshAccessToken } from "../../api/auth-api";
 import { USERDATA_STORAGE_KEY } from "../../../constants";
 
 const baseURL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000";
@@ -22,7 +22,7 @@ const getResponseInterceptor = (logout: () => void) => {
         originalRequest._retry = true;
 
         try {
-          const data = await generateRefreshToken();
+          const data = await refreshAccessToken();
           console.log(data);
           const accessToken = data!.token;
 
@@ -51,10 +51,7 @@ const AxiosProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [logout]);
 
-
-  const login = () => {
-    
-  }
+  const login = () => {};
 
   return children;
 };
