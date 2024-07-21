@@ -87,9 +87,9 @@ const Auth = () => {
     (id: string, value: string, isValid: boolean) => {
       dispatch({
         type: "INPUT_CHANGE",
+        inputId: id,
         value: value,
         isValid: isValid,
-        inputId: id,
       });
     },
     []
@@ -126,17 +126,19 @@ const Auth = () => {
         });
       }
 
-      setAuthPending(false);
       auth.login(data.userId, data.email, data.token);
     } catch (error: any) {
-      setAuthPending(false);
       setErrorMessage(
-        error.message || "Something went wrong, Please try again."
+        error.response?.data?.message ||
+          "Something went wrong, Please try again."
       );
+    } finally {
+      setAuthPending(false);
     }
   };
 
-  const switchModeHandler = () => {
+  const switchModeHandler = (e: FormEvent) => {
+    e.preventDefault();
     if (isLoginMode) {
       // Moving to signup mode
       setFormData(
@@ -179,7 +181,7 @@ const Auth = () => {
                   element={InputType.Input}
                   id="name"
                   label="Name"
-                  type="name"
+                  type="text"
                   placeholder="Solomon"
                   validators={[VALIDATOR_REQUIRE()]}
                   errorText="Please enter a name."
@@ -229,7 +231,6 @@ const Auth = () => {
                 {isLoginMode
                   ? "Don't have an account yet?"
                   : "Already have an account?"}{" "}
-                &nbsp;
                 <button
                   onClick={switchModeHandler}
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
@@ -241,6 +242,7 @@ const Auth = () => {
           </div>
         </div>
       </div>
+      {/* TODO: Fix positioning and animation */}
       {errorMessage && <ErrorNotification message={errorMessage} />}
     </section>
   );

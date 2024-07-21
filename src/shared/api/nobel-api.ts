@@ -1,5 +1,5 @@
 import axios from "axios";
-import { get } from "../utils/api-helper";
+import { generateQueryParamString, get } from "../utils/api-helper";
 
 const baseURL = "https://api.nobelprize.org/2.0";
 
@@ -16,11 +16,21 @@ export const getLaureateDataById = async (laureateId: string) => {
   return data;
 };
 
-// TODO: Refactor to avoid duplication
-export const getLaureates = async (offset: number) => {
+export const getLaureates = async (
+  offset: number,
+  filterQueryObj?: {
+    [key: string]: string ;
+  }
+) => {
+
+  let queryString = `offset=${offset}`;
+  if (filterQueryObj) {
+    queryString = generateQueryParamString(filterQueryObj, "all");
+  }
+
   const data = await get(
     instance,
-    `/laureates?offset=${offset}`,
+    `/laureates?offset=${offset}${queryString != "" && `&${queryString}`}`,
     "Error fetching Laureates"
   );
   return data;
