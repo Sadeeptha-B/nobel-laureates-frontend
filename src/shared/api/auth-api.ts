@@ -73,11 +73,11 @@ export const signup = async (formInputs: { [key: string]: string }) => {
     email: formInputs.email,
     password: formInputs.password,
   });
-
   const { data } = response;
 
   if (response.status === 201) {
     localStorage.setItem(USERDATA_STORAGE_KEY, JSON.stringify(data));
+    return data;
   } else {
     throw new Error(data);
   }

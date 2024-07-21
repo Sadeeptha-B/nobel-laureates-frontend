@@ -24,7 +24,6 @@ const initialCommentState: CommentState = {
 };
 
 const CommentSection = (props: CommentSectionProps) => {
-  const auth = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const [currCommentState, setCurrCommentState] =
     useState<CommentState>(initialCommentState);
@@ -57,7 +56,6 @@ const CommentSection = (props: CommentSectionProps) => {
 
     try {
       let newComment = await postComment(
-        auth.userId!,
         props.laureateId!,
         currCommentState.value
       );
@@ -97,7 +95,7 @@ const CommentSection = (props: CommentSectionProps) => {
             >
               <div className="flex items-center space-x-2 rtl:space-x-reverse">
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Bonnie Green
+                  {c.username}
                 </span>
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                   {new Date(c.createdAt).toLocaleString()}

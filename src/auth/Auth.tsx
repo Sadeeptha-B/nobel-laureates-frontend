@@ -112,7 +112,7 @@ const Auth = () => {
     try {
       setAuthPending(true);
       setErrorMessage(undefined);
-      let data;
+      let data = null;
       if (isLoginMode) {
         data = await login({
           email: formState.inputs.email.value,

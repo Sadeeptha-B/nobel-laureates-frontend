@@ -14,12 +14,10 @@ export const getCommentsByLaureateId = async (laureateId: string) => {
 };
 
 export const postComment = async (
-  userId: string,
   laureateId: string,
   content: string
 ) => {
   const response = await instance.post("api/comments/", {
-    userId,
     laureateId,
     content,
   });
