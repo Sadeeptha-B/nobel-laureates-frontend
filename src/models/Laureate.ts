@@ -2,6 +2,7 @@ import { NobelItemDetails, NobelPrize } from "./NobelPrize";
 
 export class Laureate {
   // Body is based on the API response from nobels api
+  // Not modelling organizational laureates for simplicity
   static fromJson(body: any) {
     const id = body.id;
     const knownName = body.knownName?.en ?? body.fullName.en;

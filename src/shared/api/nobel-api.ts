@@ -38,15 +38,14 @@ export const getLaureates = async (
     [key: string]: string;
   }
 ) => {
-  let queryString = `offset=${offset}`;
+  let queryString = "";
+
   if (filterQueryObj) {
     queryString = generateQueryParamString(filterQueryObj, "all");
   }
 
-  const data = await get(
-    instance,
-    `/laureates?offset=${offset}${queryString != "" && `&${queryString}`}`,
-    "Error fetching Laureates"
-  );
+  const separator = queryString != "" ? "&" : "";
+  const url = `/laureates?offset=${offset}${separator}${queryString}`;
+  const data = await get(instance, url, "Error fetching Laureates");
   return data;
 };

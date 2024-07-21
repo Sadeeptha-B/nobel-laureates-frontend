@@ -3,34 +3,41 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Laureate, LaureateItemDetails } from "../../models/Laureate";
 import LaureateList from "../components/LaureateList";
 import FilteredSearch from "../../shared/components/UIElements/FilteredSearch";
-import { GENDERS, LAUREATES_FETCH_OFFSET, NOBEL_PRIZE_CATEGORIES, getLaureates } from "../../shared/api/nobel-api";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import Select from "../../shared/components/UIElements/Select";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import {
+  GENDERS,
+  LAUREATES_FETCH_OFFSET,
+  NOBEL_PRIZE_CATEGORIES,
+  getLaureates,
+} from "../../shared/api/nobel-api";
 
 // Currently supported filters
-const initialFilterState = {
+const initialFilterState: FilterState = {
   gender: "all",
-  nobelPrizeCategories: "all",
-  birthDate: "all",
-  deathDate: "all",
+  nobelPrizeCategory: "all",
+  year: {},
 };
 
 const Laureates = () => {
   const [offset, setOffset] = useState(0);
   const [filterState, setFilterState] = useState(initialFilterState);
   const [items, setItems] = useState<LaureateItemDetails[]>([]);
-  const [hasMore, setHasMore] = useState(false);
+  const [itemsLeft, setItemsLeft] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
 
   // Using Intersection Observer API to implement data fetch on reaching end of page
   const setObserver = (node: HTMLDivElement) => {
+    // Data fetch already in progress
     if (isLoading) return;
+
+    // Remove previous observer
     if (observer.current) observer.current.disconnect();
 
     observer.current = new IntersectionObserver((entries) => {
       const entry = entries[0];
-      if (entry.isIntersecting && hasMore) {
+      if (entry.isIntersecting && itemsLeft) {
         setOffset((prev) => prev + LAUREATES_FETCH_OFFSET);
       }
     });
@@ -46,19 +53,21 @@ const Laureates = () => {
     setItems([]);
   }, [filterState]);
 
-  // When filter state changes, trigger new api request
+  // When offset changes, trigger new api request
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const data = await getLaureates(offset, filterState);
-        console.log(data);
+        const data = await getLaureates(
+          offset,
+          FilterState.convertToObj(filterState)
+        );
 
         const items = data.laureates
-          .filter((l: any) => l.knownName != undefined)
+          .filter((l: any) => l.knownName != undefined) // filter organizations
           .map((l: any) => Laureate.fromJson(l).toLaureateItemDetails());
 
-        setHasMore(items.length > 0);
+        setItemsLeft(items.length > 0);
         setItems((prev) => [...prev, ...items]);
       } catch (error) {
         console.log(error);
@@ -69,6 +78,7 @@ const Laureates = () => {
     fetchData();
   }, [offset, filterState]);
 
+  // Handle selection change
   const selectChangeHandler = useCallback((category: string, value: string) => {
     setFilterState((prev) => ({
       ...prev,
@@ -80,17 +90,17 @@ const Laureates = () => {
     <>
       <div className="flex justify-end">
         <Select
-          category={["nobelPrizeCategory", "Prize Categories"]}
+          category={[FilterCategory.NOBEL_PRIZE_CATEGORY, "Prize Categories"]}
           options={NOBEL_PRIZE_CATEGORIES}
           onChange={selectChangeHandler}
         />
         <Select
-          category={["gender", "Gender"]}
+          category={[FilterCategory.GENDER, "Gender"]}
           options={GENDERS}
           onChange={selectChangeHandler}
         />
         <FilteredSearch
-          category={["year", "Year"]}
+          category={[FilterCategory.YEAR, "Year"]}
           options={[
             ["birthDate", "Birth Year"],
             ["deathDate", "Death Year"],
@@ -111,3 +121,38 @@ const Laureates = () => {
 };
 
 export default Laureates;
+
+enum FilterCategory {
+  GENDER = "gender",
+  NOBEL_PRIZE_CATEGORY = "nobelPrizeCategory",
+  YEAR = "year",
+}
+
+// State type definitions
+class FilterState {
+  static convertToObj(state: FilterState) {
+    return {
+      gender: state.gender,
+      nobelPrizeCategory: state.nobelPrizeCategory,
+      ...state.year,
+    };
+  }
+
+  static compareYearState(current: DateFilter, newVal: DateFilter) {
+    return JSON.stringify(current) === JSON.stringify(newVal);
+  }
+
+  constructor(
+    public gender: string,
+    public nobelPrizeCategory: string,
+    public year: DateFilter
+  ) {}
+}
+
+// Only one of these filters can exist at a time
+type DateFilter =
+  | {
+      birthYear: string;
+    }
+  | { deathYear: string }
+  | {};

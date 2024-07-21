@@ -33,6 +33,5 @@ export const generateQueryParamString = (
     }
     resArr.push(`${key}=${obj[key]}`);
   }
-
   return resArr.join("&");
 };
