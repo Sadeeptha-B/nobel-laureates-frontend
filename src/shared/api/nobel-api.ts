@@ -19,10 +19,9 @@ export const getLaureateDataById = async (laureateId: string) => {
 export const getLaureates = async (
   offset: number,
   filterQueryObj?: {
-    [key: string]: string ;
+    [key: string]: string;
   }
 ) => {
-
   let queryString = `offset=${offset}`;
   if (filterQueryObj) {
     queryString = generateQueryParamString(filterQueryObj, "all");
