@@ -1,4 +1,4 @@
-import axios, { InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
 import { USERDATA_STORAGE_KEY } from "../../constants";
 import { get } from "../utils/api-helper";
 

@@ -1,7 +1,3 @@
-import React from "react";
-
-type Props = {};
-
 const About = () => {
   return (
     <div className="m-20 text-gray-500 dark:text-gray-600">

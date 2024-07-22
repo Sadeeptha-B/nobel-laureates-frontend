@@ -2,17 +2,21 @@
 
 This is the frontend for the Nobel Laureates Project. It is implemented with React on Vite with TypeScript. Styling is implemented with TailwindCSS with [Flowbite components](https://flowbite.com).
 The backend for this application is at [Nobel Laureates Backend](https://github.com/Sadeeptha-B/nobel-laureates-backend)
-The overall tech stack for the solution is the MERN stack. With React, MongoDB, Express and Node, with TypeScript
+Developed with the MERN stack. With React, MongoDB, Express and Node, with TypeScript
 
 ## App features
 
 - Login and Signup pages with Form validation
-- Authentication with JWT with Access Tokens and Refresh Tokens (Implemented with storing Access Tokens on Local Storage and Refresh Tokens on Cookie Storage )
-- reCAPTCHA implementation (In progress)
+- Authentication with JWT with Access Tokens and Refresh Tokens (Implemented with storing Access Tokens on Local Storage and Refresh Tokens on Cookie Storage ).
+- Auto logout on access token expiry
 - Displaying a List of Laureates in an infinite scrollable page
+- Implementing filters in infinite scrollable page
+- Allow user to post comments under a specific laureate
 
-Some features are still in progress, such as reCAPTCHA implementation and the UI for the Laureate Details page.
-These will be ironed out over 19/07/2023 and 20/07/2023 including deployment.
+In progress
+
+- reCAPTCHA implementation (In progress)
+- Remove refresh token on server side on logout (make an api call for this)
 
 ## Running locally
 
