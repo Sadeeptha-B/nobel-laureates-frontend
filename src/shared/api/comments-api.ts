@@ -4,7 +4,7 @@ import { get } from "../utils/api-helper";
 export const getCommentsByLaureateId = async (laureateId: string) => {
   const data = await get(
     axios,
-    `api/comments/laureate/${laureateId}`, // TODO: Convert to query param req
+    `api/comments?laureateId=${laureateId}`, 
     `Error getting comments for Laureate Id: ${laureateId}`
   );
   return data.comments;
