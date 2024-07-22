@@ -14,7 +14,8 @@ import About from "./laureates/pages/About";
 import Auth from "./auth/Auth";
 import { USERDATA_STORAGE_KEY } from "./constants";
 import { getUserDataFromLocalStorage } from "./shared/utils/localstorage-helper";
-import {UserAuthData} from "./models/UserData";
+import { UserAuthData } from "./models/UserData";
+import AxiosProvider from "./shared/components/Utils/AxiosProvider";
 
 function App() {
   const [token, setToken] = useState<string | null>();
@@ -61,12 +62,12 @@ function App() {
     <AuthContext.Provider
       value={{ isLoggedIn: !!token, token, userId, login, logout }}
     >
-      {/* <AxiosErrorHandler> */}
-      <Router>
-        <MainHeader />
-        <main className="mt-5">{routes}</main>
-      </Router>
-      {/* </AxiosErrorHandler> */}
+      <AxiosProvider>
+        <Router>
+          <MainHeader />
+          <main className="mt-5">{routes}</main>
+        </Router>
+      </AxiosProvider>
     </AuthContext.Provider>
   );
 }
