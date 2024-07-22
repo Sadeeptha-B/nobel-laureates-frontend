@@ -1,6 +1,6 @@
 import NavLinks from "./NavLinks";
 import LogoBanner from "../UIElements/LogoBanner";
-import UserDropdownMenu from "../UIElements/UserDropdownMenu";
+import UserDropdownMenu from "./UserDropdownMenu";
 import { AuthContext } from "../../context/auth-context";
 import { useContext } from "react";
 
