@@ -16,6 +16,7 @@ import { USERDATA_STORAGE_KEY } from "./constants";
 import { getUserDataFromLocalStorage } from "./shared/utils/localstorage-helper";
 import { UserAuthData } from "./models/UserData";
 import AxiosProvider from "./shared/components/Utils/AxiosProvider";
+import { logout as apiLogout } from "./shared/api/auth-api";
 
 function App() {
   const [token, setToken] = useState<string | null>();
@@ -34,6 +35,10 @@ function App() {
     setToken(null);
     setUserId(null);
     localStorage.removeItem(USERDATA_STORAGE_KEY);
+    const serverLogout = async () => {
+      await apiLogout();
+    };
+    serverLogout();
   }, []);
 
   // Called on mount
@@ -44,7 +49,7 @@ function App() {
     }
   }, [login]);
 
-  let routes = !token ? (
+  const routes = !token ? (
     <Routes>
       <Route path="/auth" element={<Auth />} />
       <Route path="*" element={<Navigate to="/auth" />} />

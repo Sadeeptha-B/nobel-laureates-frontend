@@ -35,8 +35,20 @@ export const signup = async (formInputs: { [key: string]: string }) => {
   }
 };
 
+export const logout = async () => {
+  const response = await axios.post("api/users/logout");
+
+  if (response.status != 200) {
+    console.error("Error logging out", response);
+  }
+};
+
 export const refreshAccessToken = async () => {
-  const data = get(axios, "/api/users/refreshToken", "Error generating access token");
+  const data = get(
+    axios,
+    "/api/users/refreshToken",
+    "Error generating access token"
+  );
   return data;
 };
 

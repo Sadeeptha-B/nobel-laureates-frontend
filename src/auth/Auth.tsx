@@ -241,7 +241,6 @@ const Auth = () => {
           </div>
         </div>
       </div>
-      {/* TODO: Fix positioning and animation */}
       {errorMessage && <ErrorNotification message={errorMessage} />}
     </section>
   );

@@ -15,8 +15,6 @@ const UserDropdownMenu = () => {
         setUserDetails(data as UserDetails);
       } catch (error) {
         console.log(error);
-        auth.logout();
-        // TODO: Show some indication to the user
       }
     };
 
@@ -72,7 +70,7 @@ const UserDropdownMenu = () => {
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                   onClick={auth.logout}
                 >
-                  Sign out
+                  Log out
                 </Link>
               </li>
             </ul>
