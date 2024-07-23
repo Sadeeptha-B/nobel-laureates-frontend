@@ -31,12 +31,11 @@ It is recommended to run this app with Node.js v20.15.1 (currently LTS). Install
 The app requires a .env file to store secrets. Create .env file at the root directory with the following
 
 ```
-VITE_APP_SECRET_KEY=
 VITE_APP_SITE_KEY=
 VITE_APP_API_URL=
 ```
 
-Secret key and site key are required for reCAPTCHA. API URL is for the locally running backend. Instructions for setting up the backend are in it's repository linked above.
+Site key is required for reCAPTCHA. API URL is for the locally running backend. Instructions for setting up the backend are in it's repository linked above.
 
 After setting up the .env file, run the project with
 

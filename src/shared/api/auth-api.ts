@@ -7,6 +7,7 @@ export const login = async (formInputs: { [key: string]: string }) => {
   const response = await axios.post("/api/users/login", {
     email: formInputs.email,
     password: formInputs.password,
+    captchaToken: formInputs.captchaToken,
   });
 
   const { data } = response;
@@ -24,6 +25,7 @@ export const signup = async (formInputs: { [key: string]: string }) => {
     name: formInputs.name,
     email: formInputs.email,
     password: formInputs.password,
+    captchaToken: formInputs.captchaToken,
   });
   const { data } = response;
 

@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useReducer,
+  useRef,
   useState,
 } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -17,14 +18,6 @@ import LoadingSpinner from "../shared/components/UIElements/LoadingSpinner";
 import ErrorNotification from "../shared/components/UIElements/ErrorNotification";
 import { login, signup } from "../shared/api/auth-api";
 
-// Types
-type FormInputs = { [key: string]: { value: string; isValid: boolean } };
-
-type FormState = {
-  inputs: FormInputs;
-  isValid: boolean;
-};
-
 type ACTIONTYPE =
   | {
       type: "INPUT_CHANGE";
@@ -32,13 +25,18 @@ type ACTIONTYPE =
       isValid: boolean;
       value: string;
     }
-  | { type: "SET_DATA"; inputs: FormInputs; isValid: boolean };
+  | {
+      type: "SET_DATA";
+      inputs: FormInputs;
+      isValid: boolean;
+    };
 
 // Initial state starts from login
 const initialFormState: FormState = {
   inputs: {
     email: { value: "", isValid: false },
     password: { value: "", isValid: false },
+    captchaToken: { value: "", isValid: false },
   },
   isValid: false,
 };
@@ -52,7 +50,7 @@ const formReducer = (state: FormState, action: ACTIONTYPE): FormState => {
           formIsValid = formIsValid && action.isValid;
         } else {
           formIsValid =
-            formIsValid && state.inputs[inputId as keyof FormInputs].isValid;
+            formIsValid && state.inputs[inputId as keyof FormInputs]!.isValid;
         }
       }
 
@@ -77,12 +75,11 @@ const formReducer = (state: FormState, action: ACTIONTYPE): FormState => {
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [formState, dispatch] = useReducer(formReducer, initialFormState);
-  // To handle switching between login and signup modes
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoginMode, setIsLoginMode] = useState(true); // To handle switching between login and signup modes
   const [authPending, setAuthPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
-  // Use callback to prevent infinite loops
   const inputHandler = useCallback(
     (id: string, value: string, isValid: boolean) => {
       dispatch({
@@ -94,6 +91,40 @@ const Auth = () => {
     },
     []
   );
+
+  const captchaHandler = useCallback((token: string | null) => {
+    dispatch({
+      type: "INPUT_CHANGE",
+      inputId: "captchaToken",
+      value: token ?? "",
+      isValid: !!token,
+    });
+  }, []);
+
+  const switchModeHandler = (e: FormEvent) => {
+    e.preventDefault();
+    recaptchaRef.current?.reset(); // Reset recaptcha state
+
+    if (isLoginMode) {
+      // Moving to signup mode
+      setFormData(
+        { ...formState.inputs, name: { value: "", isValid: false } },
+        false
+      );
+    } else {
+      // Moving to login mode
+      setFormData(
+        {
+          ...formState.inputs,
+          email: formState.inputs.email,
+          password: formState.inputs.password,
+        },
+        false
+      );
+    }
+
+    setIsLoginMode((prevMode) => !prevMode);
+  };
 
   const setFormData = useCallback(
     (inputs: FormInputs, isFormValid: boolean) => {
@@ -117,12 +148,14 @@ const Auth = () => {
         data = await login({
           email: formState.inputs.email.value,
           password: formState.inputs.password.value,
+          captchaToken: formState.inputs.captchaToken.value,
         });
       } else {
         data = await signup({
-          name: formState.inputs.name.value,
+          name: formState.inputs.name!.value,
           email: formState.inputs.email.value,
           password: formState.inputs.password.value,
+          captchaToken: formState.inputs.captchaToken.value,
         });
       }
 
@@ -135,24 +168,6 @@ const Auth = () => {
     } finally {
       setAuthPending(false);
     }
-  };
-
-  const switchModeHandler = (e: FormEvent) => {
-    e.preventDefault();
-    if (isLoginMode) {
-      // Moving to signup mode
-      setFormData(
-        { ...formState.inputs, name: { value: "", isValid: false } },
-        false
-      );
-    } else {
-      // Moving to login mode
-      setFormData(
-        { email: formState.inputs.email, password: formState.inputs.password },
-        formState.inputs.email.isValid && formState.inputs.password.isValid
-      );
-    }
-    setIsLoginMode((prevMode) => !prevMode);
   };
 
   return (
@@ -218,6 +233,8 @@ const Auth = () => {
               <ReCAPTCHA
                 className="flex justify-center items-center"
                 sitekey={import.meta.env.VITE_APP_SITE_KEY as string}
+                ref={recaptchaRef}
+                onChange={captchaHandler}
               />
               <button
                 type="submit"
@@ -247,3 +264,19 @@ const Auth = () => {
 };
 
 export default Auth;
+
+// Types
+type InputData = { value: string; isValid: boolean };
+
+// Defined form input fields
+type FormInputs = {
+  name?: InputData;
+  email: InputData;
+  password: InputData;
+  captchaToken: InputData;
+};
+
+type FormState = {
+  inputs: FormInputs;
+  isValid: boolean;
+};
